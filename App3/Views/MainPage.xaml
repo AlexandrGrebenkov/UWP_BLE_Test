@@ -26,7 +26,7 @@
             <Button Content="Scan" Command="{Binding cmdScan}"/>
                 <ProgressBar IsIndeterminate="{Binding IsScanning}" Margin="0,8"/>
             </StackPanel>
-            <ListView Grid.Row="1" ItemsSource="{Binding Devices}">
+            <ListView Grid.Row="1" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>

@@ -38,6 +38,7 @@ namespace App3.ViewModels
             set { SetProperty(ref _IsScanning, value); }
         }
 
+        DeviceWatcher deviceWatcher;
 
         public MainVM()
         {
@@ -62,7 +63,7 @@ namespace App3.ViewModels
 
             string[] requestedProperties = { "System.Devices.Aep.DeviceAddress", "System.Devices.Aep.IsConnected", "System.Devices.Aep.Bluetooth.Le.IsConnectable" };
 
-            DeviceWatcher deviceWatcher =
+            deviceWatcher =
                         DeviceInformation.CreateWatcher(
                         BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
                         requestedProperties,
@@ -86,9 +87,16 @@ namespace App3.ViewModels
                     return;
                 }
 
-                Devices = new ObservableCollection<DeviceInformation>();
-                IsScanning = true;
-                deviceWatcher.Start();
+                
+                if (deviceWatcher.Status == DeviceWatcherStatus.Aborted ||
+                    deviceWatcher.Status == DeviceWatcherStatus.Created ||
+                    deviceWatcher.Status == DeviceWatcherStatus.Stopped)
+                {
+                    deviceWatcher.Start();
+
+                    Devices = new ObservableCollection<DeviceInformation>();
+                    IsScanning = true;
+                }
             });
         }
 
@@ -111,6 +119,7 @@ namespace App3.ViewModels
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
                 IsScanning = false;
+                deviceWatcher.Stop();
             });
         }
 
